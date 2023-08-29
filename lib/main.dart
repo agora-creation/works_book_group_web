@@ -19,8 +19,8 @@ Future main() async {
       projectId: "works-book",
       storageBucket: "works-book.appspot.com",
       messagingSenderId: "878999657230",
-      appId: "1:878999657230:web:c23c1ea025f8a05a8d155f",
-      measurementId: "G-CN68FB076W",
+      appId: "1:878999657230:web:eb751d4e57df76428d155f",
+      measurementId: "G-CX4T5R03RQ",
     ),
   );
   await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);

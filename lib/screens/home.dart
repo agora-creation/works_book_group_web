@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/group_login.dart';
 import 'package:works_book_group_web/providers/auth.dart';
+import 'package:works_book_group_web/screens/group_login.dart';
 import 'package:works_book_group_web/screens/login.dart';
 import 'package:works_book_group_web/services/group_login.dart';
 import 'package:works_book_group_web/widgets/app_bar_title.dart';
@@ -75,9 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           PaneItemSeparator(),
           PaneItem(
-            icon: const Icon(FluentIcons.account_activity),
-            title: const Text('ログイン申請'),
+            icon: const Icon(FluentIcons.bank),
+            title: const Text('所属ユーザー管理'),
             body: Container(),
+          ),
+          PaneItemSeparator(),
+          PaneItem(
+            icon: const Icon(FluentIcons.account_activity),
+            title: const Text('所属申請'),
+            body: GroupLoginScreen(authProvider: authProvider),
             infoBadge: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: groupLoginService.streamListRequest(
                 authProvider.group?.number,
