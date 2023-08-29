@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/group_login.dart';
+import 'package:works_book_group_web/services/group_login.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
 import 'package:works_book_group_web/widgets/custom_cell.dart';
 
@@ -60,14 +61,26 @@ class GroupLoginSource extends DataGridSource {
           labelText: '承認',
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
-          onPressed: () {},
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => GroupLoginDetailsDialog(
+              groupLogin: groupLogin,
+              accept: true,
+            ),
+          ),
         ),
         const SizedBox(width: 4),
         CustomButton(
           labelText: '却下',
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
-          onPressed: () {},
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => GroupLoginDetailsDialog(
+              groupLogin: groupLogin,
+              accept: false,
+            ),
+          ),
         ),
       ],
     ));
@@ -118,5 +131,80 @@ class GroupLoginSource extends DataGridSource {
 
   void updateDataSource() {
     notifyListeners();
+  }
+}
+
+class GroupLoginDetailsDialog extends StatefulWidget {
+  final GroupLoginModel groupLogin;
+  final bool accept;
+
+  const GroupLoginDetailsDialog({
+    required this.groupLogin,
+    required this.accept,
+    super.key,
+  });
+
+  @override
+  State<GroupLoginDetailsDialog> createState() =>
+      _GroupLoginDetailsDialogState();
+}
+
+class _GroupLoginDetailsDialogState extends State<GroupLoginDetailsDialog> {
+  GroupLoginService groupLoginService = GroupLoginService();
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: Text(
+        widget.accept ? '所属申請 - 承認' : '所属申請 - 承認',
+        style: const TextStyle(fontSize: 18),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          widget.accept
+              ? const Text('以下の所属申請を承認しますか？')
+              : const Text('以下の所属申請を却下しますか？'),
+          const SizedBox(height: 8),
+          Text(
+            '申請日時 : ${dateText('yyyy/MM/dd HH:mm', widget.groupLogin.createdAt)}',
+          ),
+          Text('ユーザー名 : ${widget.groupLogin.userName}'),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        widget.accept
+            ? CustomButton(
+                labelText: '承認する',
+                labelColor: kWhiteColor,
+                backgroundColor: kBlueColor,
+                onPressed: () async {
+                  groupLoginService.update({
+                    'id': widget.groupLogin.id,
+                    'accept': true,
+                  });
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
+              )
+            : CustomButton(
+                labelText: '却下する',
+                labelColor: kWhiteColor,
+                backgroundColor: kRedColor,
+                onPressed: () async {
+                  groupLoginService.delete({'id': widget.groupLogin.id});
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                },
+              ),
+      ],
+    );
   }
 }
