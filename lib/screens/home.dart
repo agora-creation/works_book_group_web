@@ -6,6 +6,10 @@ import 'package:works_book_group_web/models/group_login.dart';
 import 'package:works_book_group_web/providers/auth.dart';
 import 'package:works_book_group_web/screens/group_login.dart';
 import 'package:works_book_group_web/screens/login.dart';
+import 'package:works_book_group_web/screens/record.dart';
+import 'package:works_book_group_web/screens/schedule.dart';
+import 'package:works_book_group_web/screens/todo.dart';
+import 'package:works_book_group_web/screens/user.dart';
 import 'package:works_book_group_web/services/group_login.dart';
 import 'package:works_book_group_web/widgets/app_bar_title.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
@@ -60,25 +64,25 @@ class _HomeScreenState extends State<HomeScreen> {
           PaneItem(
             icon: const Icon(FluentIcons.shopping_cart),
             title: const Text('スケジュール管理'),
-            body: Container(),
+            body: ScheduleScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
             icon: const Icon(FluentIcons.bank),
             title: const Text('Todoタスク管理'),
-            body: Container(),
+            body: TodoScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
             icon: const Icon(FluentIcons.bank),
             title: const Text('勤怠打刻管理'),
-            body: Container(),
+            body: RecordScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
             icon: const Icon(FluentIcons.bank),
             title: const Text('所属ユーザー管理'),
-            body: Container(),
+            body: UserScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(

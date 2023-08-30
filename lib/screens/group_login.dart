@@ -34,9 +34,9 @@ class _GroupLoginScreenState extends State<GroupLoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'ユーザーが会社・組織への所属申請があった場合に、二段階認証の為、ここに所属申請が送られます。\n『承認』するまでは、ユーザーは利用できません。身に覚えのない申請は『却下』してください。',
-                  style: TextStyle(fontSize: 14),
+                Text(
+                  'ユーザーが${widget.authProvider.group?.name}へ所属申請があった場合に、二段階認証の為、ここに所属申請が送られます。\n『承認』するまでは、ユーザーは利用できません。身に覚えのない申請は『却下』してください。',
+                  style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
