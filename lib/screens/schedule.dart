@@ -30,21 +30,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: planService.streamList(widget.authProvider.group?.number),
-              builder: (context, snapshot) {
-                List<PlanModel> plans = [];
-                if (snapshot.hasData) {
-                  for (DocumentSnapshot<Map<String, dynamic>> doc
-                      in snapshot.data!.docs) {
-                    plans.add(PlanModel.fromSnapshot(doc));
+            child: SizedBox(
+              height: 750,
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: planService.streamList(
+                  widget.authProvider.group?.number,
+                ),
+                builder: (context, snapshot) {
+                  List<PlanModel> plans = [];
+                  if (snapshot.hasData) {
+                    for (DocumentSnapshot<Map<String, dynamic>> doc
+                        in snapshot.data!.docs) {
+                      plans.add(PlanModel.fromSnapshot(doc));
+                    }
                   }
-                }
-                return CustomSfCalendar(
-                  dataSource: ScheduleDataSource(plans),
-                  onTap: (CalendarTapDetails details) async {},
-                );
-              },
+                  return CustomSfCalendar(
+                    dataSource: ScheduleDataSource(plans),
+                    onTap: (CalendarTapDetails details) async {},
+                  );
+                },
+              ),
             ),
           ),
         ),

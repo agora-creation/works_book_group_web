@@ -15,13 +15,16 @@ class CustomSfCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCalendar(
-      view: CalendarView.week,
+      view: CalendarView.month,
       allowedViews: const [
         CalendarView.day,
         CalendarView.week,
         CalendarView.month,
       ],
       dataSource: dataSource,
+      monthViewSettings: const MonthViewSettings(
+        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+      ),
       selectionDecoration: BoxDecoration(
         color: kBaseColor.withOpacity(0.1),
         border: Border.all(color: kBaseColor, width: 2),
