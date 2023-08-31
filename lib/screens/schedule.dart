@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
-    as dpp;
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:works_book_group_web/common/custom_date_time_picker.dart';
 import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/group.dart';
@@ -14,6 +13,7 @@ import 'package:works_book_group_web/widgets/custom_button.dart';
 import 'package:works_book_group_web/widgets/custom_date_box.dart';
 import 'package:works_book_group_web/widgets/custom_sf_calendar.dart';
 import 'package:works_book_group_web/widgets/custom_text_box.dart';
+import 'package:works_book_group_web/widgets/custom_time_box.dart';
 
 class ScheduleScreen extends StatefulWidget {
   final AuthProvider authProvider;
@@ -54,13 +54,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 onTap: (CalendarTapDetails details) async {
                   dynamic appointment = details.appointments;
                   DateTime dateTime = details.date!;
-                  if (appointment.isNotEmpty) {
-                    await showDialog(
-                      context: context,
-                      builder: (context) => ModPlanDialog(
-                        plan: appointment.first,
-                      ),
-                    );
+                  if (appointment != null) {
+                    if (appointment.isNotEmpty) {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => ModPlanDialog(
+                          plan: appointment.first,
+                        ),
+                      );
+                    } else {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => AddPlanDialog(
+                          group: widget.authProvider.group,
+                          dateTime: dateTime,
+                        ),
+                      );
+                    }
                   } else {
                     await showDialog(
                       context: context,
@@ -179,43 +189,67 @@ class _AddPlanDialogState extends State<AddPlanDialog> {
           const SizedBox(height: 8),
           InfoLabel(
             label: '開始日時',
-            child: CustomDateBox(
-              value: startedAt,
-              onTap: () async {
-                await dpp.DatePicker.showDateTimePicker(
-                  context,
-                  minTime: kFirstDate,
-                  maxTime: kLastDate,
-                  onChanged: (value) {
+            child: Column(
+              children: [
+                CustomDateBox(
+                  value: startedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showDateChange(
+                      context: context,
+                      value: startedAt,
+                    );
                     setState(() {
-                      startedAt = value;
+                      startedAt = result;
                     });
                   },
-                  locale: dpp.LocaleType.jp,
-                  currentTime: startedAt,
-                );
-              },
+                ),
+                const SizedBox(height: 8),
+                CustomTimeBox(
+                  value: startedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showTimeChange(
+                      context: context,
+                      value: startedAt,
+                    );
+                    setState(() {
+                      startedAt = result;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
           InfoLabel(
             label: '終了日時',
-            child: CustomDateBox(
-              value: endedAt,
-              onTap: () async {
-                await dpp.DatePicker.showDateTimePicker(
-                  context,
-                  minTime: kFirstDate,
-                  maxTime: kLastDate,
-                  onChanged: (value) {
+            child: Column(
+              children: [
+                CustomDateBox(
+                  value: endedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showDateChange(
+                      context: context,
+                      value: endedAt,
+                    );
                     setState(() {
-                      endedAt = value;
+                      endedAt = result;
                     });
                   },
-                  locale: dpp.LocaleType.jp,
-                  currentTime: endedAt,
-                );
-              },
+                ),
+                const SizedBox(height: 8),
+                CustomTimeBox(
+                  value: endedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showTimeChange(
+                      context: context,
+                      value: endedAt,
+                    );
+                    setState(() {
+                      endedAt = result;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -376,43 +410,67 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
           const SizedBox(height: 8),
           InfoLabel(
             label: '開始日時',
-            child: CustomDateBox(
-              value: startedAt,
-              onTap: () async {
-                await dpp.DatePicker.showDateTimePicker(
-                  context,
-                  minTime: kFirstDate,
-                  maxTime: kLastDate,
-                  onChanged: (value) {
+            child: Column(
+              children: [
+                CustomDateBox(
+                  value: startedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showDateChange(
+                      context: context,
+                      value: startedAt,
+                    );
                     setState(() {
-                      startedAt = value;
+                      startedAt = result;
                     });
                   },
-                  locale: dpp.LocaleType.jp,
-                  currentTime: startedAt,
-                );
-              },
+                ),
+                const SizedBox(height: 8),
+                CustomTimeBox(
+                  value: startedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showTimeChange(
+                      context: context,
+                      value: startedAt,
+                    );
+                    setState(() {
+                      startedAt = result;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
           InfoLabel(
             label: '終了日時',
-            child: CustomDateBox(
-              value: endedAt,
-              onTap: () async {
-                await dpp.DatePicker.showDateTimePicker(
-                  context,
-                  minTime: kFirstDate,
-                  maxTime: kLastDate,
-                  onChanged: (value) {
+            child: Column(
+              children: [
+                CustomDateBox(
+                  value: endedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showDateChange(
+                      context: context,
+                      value: endedAt,
+                    );
                     setState(() {
-                      endedAt = value;
+                      endedAt = result;
                     });
                   },
-                  locale: dpp.LocaleType.jp,
-                  currentTime: endedAt,
-                );
-              },
+                ),
+                const SizedBox(height: 8),
+                CustomTimeBox(
+                  value: endedAt,
+                  onTap: () async {
+                    final result = await CustomDateTimePicker().showTimeChange(
+                      context: context,
+                      value: endedAt,
+                    );
+                    setState(() {
+                      endedAt = result;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
