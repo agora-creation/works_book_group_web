@@ -83,7 +83,7 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(
-        widget.plan.name,
+        widget.plan.title,
         style: const TextStyle(fontSize: 18),
       ),
       content: Column(
@@ -100,7 +100,7 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
               : Text(
                   '予定日: ${dateText('yyyy/MM/dd HH:mm', widget.plan.startedAt)}～${dateText('yyyy/MM/dd HH:mm', widget.plan.endedAt)}'),
           Text('作成日時: ${dateText('yyyy/MM/dd HH:mm', widget.plan.createdAt)}'),
-          Text('作成者: ${widget.plan.userName}'),
+          Text('作成者: ${widget.plan.createdUser}'),
         ],
       ),
       actions: [

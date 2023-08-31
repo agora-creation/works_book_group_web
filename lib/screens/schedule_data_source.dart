@@ -19,7 +19,7 @@ class ScheduleDataSource extends CalendarDataSource {
 
   @override
   String getSubject(int index) {
-    return appointments![index].name;
+    return appointments![index].title;
   }
 
   @override

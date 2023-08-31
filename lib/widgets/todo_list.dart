@@ -17,8 +17,8 @@ class TodoList extends StatelessWidget {
       child: Card(
         backgroundColor: todo.finished == true ? kGrey3Color : null,
         child: ListTile(
-          title: Text(todo.content),
-          subtitle: Text('aaaa'),
+          title: Text(todo.title),
+          subtitle: Text(todo.details),
         ),
       ),
     );
