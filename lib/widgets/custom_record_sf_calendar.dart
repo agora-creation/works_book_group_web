@@ -17,13 +17,13 @@ class CustomRecordSfCalendar extends StatelessWidget {
     return SfCalendar(
       viewNavigationMode: ViewNavigationMode.none,
       view: CalendarView.month,
-      cellBorderColor: kGrey2Color,
+      cellBorderColor: kBlackColor,
       dataSource: dataSource,
       monthViewSettings: const MonthViewSettings(
         showTrailingAndLeadingDates: false,
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
       ),
-      initialDisplayDate: DateTime(2023, 7, 1),
+      initialDisplayDate: DateTime(2023, 8, 1),
       selectionDecoration: BoxDecoration(
         color: kBaseColor.withOpacity(0.1),
         border: Border.all(color: kBaseColor, width: 2),
