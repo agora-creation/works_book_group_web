@@ -26,7 +26,7 @@ FluentThemeData customTheme() {
     checkboxTheme: CheckboxThemeData(
       checkedDecoration: ButtonState.all<Decoration>(
         BoxDecoration(
-          color: kBackColor,
+          color: kBaseColor,
           border: Border.all(color: kBaseColor),
         ),
       ),
