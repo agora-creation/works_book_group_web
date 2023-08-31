@@ -15,7 +15,7 @@ class CustomSfCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCalendar(
-      view: CalendarView.month,
+      view: CalendarView.week,
       cellBorderColor: kGrey2Color,
       allowedViews: const [
         CalendarView.day,
