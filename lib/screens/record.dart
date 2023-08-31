@@ -4,11 +4,9 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/record.dart';
 import 'package:works_book_group_web/providers/auth.dart';
-import 'package:works_book_group_web/screens/record_data_source.dart';
 import 'package:works_book_group_web/services/record.dart';
 import 'package:works_book_group_web/widgets/custom_icon_text_button.dart';
-import 'package:works_book_group_web/widgets/custom_record_sf_calendar.dart';
-
+s
 class RecordScreen extends StatefulWidget {
   final AuthProvider authProvider;
 
@@ -61,9 +59,9 @@ class _RecordScreenState extends State<RecordScreen> {
                         records.add(RecordModel.fromSnapshot(doc));
                       }
                     }
-                    return CustomRecordSfCalendar(
-                      dataSource: RecordDataSource(records),
-                      onTap: (CalendarTapDetails details) async {},
+                    return SfCalendar(
+                      showDatePickerButton: true,
+                      view: CalendarView.,
                     );
                   },
                 ),

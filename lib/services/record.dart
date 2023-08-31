@@ -8,7 +8,7 @@ class RecordService {
     return firestore
         .collection(collection)
         .where('groupNumber', isEqualTo: groupNumber ?? 'error')
-        .orderBy('startedAt', descending: false)
+        .orderBy('createdAt', descending: true)
         .snapshots();
   }
 }
