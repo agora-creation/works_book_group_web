@@ -23,8 +23,8 @@ dependencies:
   syncfusion_flutter_datagrid_export: ^22.2.11
   syncfusion_flutter_calendar: ^22.2.11
   syncfusion_localizations: ^22.2.11
+  multiple_stream_builder: ^3.0.2
   common_utils: ^2.1.0
-  persian_datetime_picker: ^2.6.0
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
   cloud_firestore: ^4.8.1
