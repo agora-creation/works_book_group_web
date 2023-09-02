@@ -60,42 +60,44 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: planService.streamList(
-                  widget.authProvider.group?.number,
-                ),
-                builder: (context, snapshot) {
-                  plans.clear();
-                  if (snapshot.hasData) {
-                    for (DocumentSnapshot<Map<String, dynamic>> doc
-                        in snapshot.data!.docs) {
-                      PlanModel plan = PlanModel.fromSnapshot(doc);
-                      plans.add(Appointment(
-                        startTime: plan.startedAt,
-                        endTime: plan.endedAt,
-                        subject: plan.title,
-                        notes: plan.details,
-                        color: plan.color,
-                        isAllDay: plan.allDay,
-                        id: plan.id,
-                      ));
-                    }
-                  }
-                  return CustomScheduleView(
-                    plans: plans,
-                    onTap: (CalendarTapDetails details) async {
-                      dynamic appointment = details.appointments;
-                      if (appointment != null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ModPlanDialog(
-                            plan: appointment.first,
-                          ),
-                        );
+              Expanded(
+                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: planService.streamList(
+                    widget.authProvider.group?.number,
+                  ),
+                  builder: (context, snapshot) {
+                    plans.clear();
+                    if (snapshot.hasData) {
+                      for (DocumentSnapshot<Map<String, dynamic>> doc
+                          in snapshot.data!.docs) {
+                        PlanModel plan = PlanModel.fromSnapshot(doc);
+                        plans.add(Appointment(
+                          startTime: plan.startedAt,
+                          endTime: plan.endedAt,
+                          subject: plan.title,
+                          notes: plan.details,
+                          color: plan.color,
+                          isAllDay: plan.allDay,
+                          id: plan.id,
+                        ));
                       }
-                    },
-                  );
-                },
+                    }
+                    return CustomScheduleView(
+                      plans: plans,
+                      onTap: (CalendarTapDetails details) async {
+                        dynamic appointment = details.appointments;
+                        if (appointment != null) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ModPlanDialog(
+                              plan: appointment.first,
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
