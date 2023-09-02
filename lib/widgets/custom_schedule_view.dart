@@ -20,6 +20,7 @@ class CustomScheduleView extends StatelessWidget {
       scheduleViewMonthHeaderBuilder: scheduleViewBuilder,
       view: CalendarView.schedule,
       dataSource: _DataSource(plans),
+      initialSelectedDate: DateTime.now(),
       headerDateFormat: 'yyyy年MM月',
       onTap: onTap,
     );

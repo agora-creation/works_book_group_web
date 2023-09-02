@@ -4,10 +4,12 @@ import 'package:syncfusion_flutter_calendar/calendar.dart' as sfc;
 class CustomRecordShift extends StatelessWidget {
   final List<sfc.Appointment> shifts;
   final List<sfc.CalendarResource> employees;
+  final Function(sfc.CalendarTapDetails)? onTap;
 
   const CustomRecordShift({
     required this.shifts,
     required this.employees,
+    this.onTap,
     super.key,
   });
 
@@ -19,6 +21,7 @@ class CustomRecordShift extends StatelessWidget {
       showNavigationArrow: true,
       dataSource: _ShiftDataSource(shifts, employees),
       headerDateFormat: 'yyyy年MM月',
+      onTap: onTap,
     );
   }
 }
