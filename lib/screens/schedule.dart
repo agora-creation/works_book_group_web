@@ -2,16 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:works_book_group_web/common/custom_date_time_picker.dart';
-import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/group.dart';
 import 'package:works_book_group_web/models/plan.dart';
 import 'package:works_book_group_web/providers/auth.dart';
-import 'package:works_book_group_web/screens/schedule_data_source.dart';
 import 'package:works_book_group_web/services/plan.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
 import 'package:works_book_group_web/widgets/custom_date_box.dart';
-import 'package:works_book_group_web/widgets/custom_sf_calendar.dart';
+import 'package:works_book_group_web/widgets/custom_icon_text_button.dart';
+import 'package:works_book_group_web/widgets/custom_schedule_view.dart';
 import 'package:works_book_group_web/widgets/custom_text_box.dart';
 import 'package:works_book_group_web/widgets/custom_time_box.dart';
 
@@ -29,6 +28,7 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   PlanService planService = PlanService();
+  List<Appointment> plans = [];
 
   @override
   Widget build(BuildContext context) {
@@ -37,52 +37,67 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: planService.streamList(
-              widget.authProvider.group?.number,
-            ),
-            builder: (context, snapshot) {
-              List<PlanModel> plans = [];
-              if (snapshot.hasData) {
-                for (DocumentSnapshot<Map<String, dynamic>> doc
-                    in snapshot.data!.docs) {
-                  plans.add(PlanModel.fromSnapshot(doc));
-                }
-              }
-              return CustomSfCalendar(
-                dataSource: ScheduleDataSource(plans),
-                onTap: (CalendarTapDetails details) async {
-                  dynamic appointment = details.appointments;
-                  DateTime dateTime = details.date!;
-                  if (appointment != null) {
-                    if (appointment.isNotEmpty) {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => ModPlanDialog(
-                          plan: appointment.first,
-                        ),
-                      );
-                    } else {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => AddPlanDialog(
-                          group: widget.authProvider.group,
-                          dateTime: dateTime,
-                        ),
-                      );
-                    }
-                  } else {
-                    await showDialog(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CustomIconTextButton(
+                    iconData: FluentIcons.add,
+                    iconColor: kWhiteColor,
+                    labelText: '予定を追加',
+                    labelColor: kWhiteColor,
+                    backgroundColor: kBlueColor,
+                    onPressed: () => showDialog(
                       context: context,
                       builder: (context) => AddPlanDialog(
                         group: widget.authProvider.group,
-                        dateTime: dateTime,
+                        dateTime: DateTime.now(),
                       ),
-                    );
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: planService.streamList(
+                  widget.authProvider.group?.number,
+                ),
+                builder: (context, snapshot) {
+                  plans.clear();
+                  if (snapshot.hasData) {
+                    for (DocumentSnapshot<Map<String, dynamic>> doc
+                        in snapshot.data!.docs) {
+                      PlanModel plan = PlanModel.fromSnapshot(doc);
+                      plans.add(Appointment(
+                        startTime: plan.startedAt,
+                        endTime: plan.endedAt,
+                        subject: plan.title,
+                        notes: plan.details,
+                        color: plan.color,
+                        isAllDay: plan.allDay,
+                        id: plan.id,
+                      ));
+                    }
                   }
+                  return CustomScheduleView(
+                    plans: plans,
+                    onTap: (CalendarTapDetails details) async {
+                      dynamic appointment = details.appointments;
+                      if (appointment != null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ModPlanDialog(
+                            plan: appointment.first,
+                          ),
+                        );
+                      }
+                    },
+                  );
                 },
-              );
-            },
+              ),
+            ],
           ),
         ),
       ),
@@ -288,6 +303,7 @@ class _AddPlanDialogState extends State<AddPlanDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            if (titleController.text == '') return;
             String id = planService.id();
             planService.create({
               'id': id,
@@ -310,7 +326,7 @@ class _AddPlanDialogState extends State<AddPlanDialog> {
 }
 
 class ModPlanDialog extends StatefulWidget {
-  final PlanModel plan;
+  final Appointment plan;
 
   const ModPlanDialog({
     required this.plan,
@@ -332,12 +348,12 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
 
   void _init() {
     setState(() {
-      titleController.text = widget.plan.title;
-      detailsController.text = widget.plan.details;
-      startedAt = widget.plan.startedAt;
-      endedAt = widget.plan.endedAt;
+      titleController.text = widget.plan.subject;
+      detailsController.text = widget.plan.notes ?? '';
+      startedAt = widget.plan.startTime;
+      endedAt = widget.plan.endTime;
       color = widget.plan.color.value.toRadixString(16);
-      allDay = widget.plan.allDay;
+      allDay = widget.plan.isAllDay;
     });
   }
 
@@ -495,21 +511,6 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
               },
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            '作成日時: ${dateText('yyyy/MM/dd HH:mm', widget.plan.createdAt)}',
-            style: const TextStyle(
-              color: kGreyColor,
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            '作成者: ${widget.plan.createdUser}',
-            style: const TextStyle(
-              color: kGreyColor,
-              fontSize: 14,
-            ),
-          ),
         ],
       ),
       actions: [
@@ -533,6 +534,7 @@ class _ModPlanDialogState extends State<ModPlanDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            if (titleController.text == '') return;
             planService.update({
               'id': widget.plan.id,
               'title': titleController.text,

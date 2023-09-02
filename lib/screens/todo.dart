@@ -156,6 +156,7 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            if (titleController.text == '') return;
             String id = todoService.id();
             todoService.create({
               'id': id,
@@ -266,6 +267,7 @@ class _ModTodoDialogState extends State<ModTodoDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            if (titleController.text == '') return;
             todoService.update({
               'id': widget.todo.id,
               'title': titleController.text,

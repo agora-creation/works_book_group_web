@@ -29,7 +29,12 @@ class TodoList extends StatelessWidget {
             Expanded(
               child: ListTile(
                 title: Text(todo.title),
-                subtitle: Text(todo.details),
+                subtitle: todo.details != ''
+                    ? Text(
+                        todo.details,
+                        maxLines: 1,
+                      )
+                    : null,
                 onPressed: onPressed,
               ),
             ),
