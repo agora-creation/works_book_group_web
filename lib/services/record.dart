@@ -40,4 +40,18 @@ class RecordService {
     });
     return ret;
   }
+
+  Future<List<RecordModel>> selectList(String? groupNumber) async {
+    List<RecordModel> ret = [];
+    await firestore
+        .collection(collection)
+        .where('groupNumber', isEqualTo: groupNumber ?? 'error')
+        .get()
+        .then((value) {
+      for (DocumentSnapshot<Map<String, dynamic>> doc in value.docs) {
+        ret.add(RecordModel.fromSnapshot(doc));
+      }
+    });
+    return ret;
+  }
 }

@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart' as sfc;
+import 'package:universal_html/html.dart';
 import 'package:works_book_group_web/common/custom_date_time_picker.dart';
+import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/record.dart';
 import 'package:works_book_group_web/models/user.dart';
@@ -74,7 +77,41 @@ class _RecordScreenState extends State<RecordScreen> {
                     labelText: 'CSVダウンロード',
                     labelColor: kWhiteColor,
                     backgroundColor: kGreenColor,
-                    onPressed: () {},
+                    onPressed: () async {
+                      final fileName =
+                          '${dateText('yyyyMMddHHmmss', DateTime.now())}.csv';
+                      List<String> header = [
+                        'ユーザーID',
+                        '出勤時間',
+                        '退勤時間',
+                        '休憩時間',
+                        '勤務時間',
+                      ];
+                      List<RecordModel> records =
+                          await recordService.selectList(
+                        widget.authProvider.group?.number,
+                      );
+                      List<List<String>> rows = [];
+                      for (RecordModel record in records) {
+                        List<String> row = [];
+                        row.add(record.userId);
+                        row.add(dateText('yyyy/MM/dd HH:mm', record.startedAt));
+                        row.add(dateText('yyyy/MM/dd HH:mm', record.endedAt));
+                        row.add(record.restTimes());
+                        row.add(record.recordTime());
+                        rows.add(row);
+                      }
+                      String csv = const ListToCsvConverter().convert(
+                        [header, ...rows],
+                      );
+                      String bom = '\uFEFF';
+                      String csvText = bom + csv;
+                      csvText = csvText.replaceAll('[', '');
+                      csvText = csvText.replaceAll(']', '');
+                      AnchorElement(href: 'data:text/plain;charset=utf-8,$csvText')
+                        ..setAttribute('download', fileName)
+                        ..click();
+                    },
                   ),
                 ],
               ),
