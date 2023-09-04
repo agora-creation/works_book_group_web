@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:works_book_group_web/models/record.dart';
 
 class RecordService {
   String collection = 'record';
@@ -26,5 +27,17 @@ class RecordService {
         .where('groupNumber', isEqualTo: groupNumber ?? 'error')
         .orderBy('createdAt', descending: true)
         .snapshots();
+  }
+
+  Future<RecordModel?> select(String? id) async {
+    RecordModel? ret;
+    await firestore
+        .collection(collection)
+        .doc(id ?? 'error')
+        .get()
+        .then((value) {
+      ret = RecordModel.fromSnapshot(value);
+    });
+    return ret;
   }
 }
