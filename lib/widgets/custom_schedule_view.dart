@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:works_book_group_web/common/functions.dart';
+import 'package:works_book_group_web/common/style.dart';
 
 class CustomScheduleView extends StatelessWidget {
   final List<Appointment> plans;
@@ -19,6 +20,23 @@ class CustomScheduleView extends StatelessWidget {
       showTodayButton: true,
       scheduleViewMonthHeaderBuilder: scheduleViewBuilder,
       view: CalendarView.schedule,
+      scheduleViewSettings: const ScheduleViewSettings(
+        hideEmptyScheduleWeek: true,
+        appointmentTextStyle: TextStyle(
+          color: kBlackColor,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        dayHeaderSettings: DayHeaderSettings(
+          dayFormat: 'EEEE',
+          dateTextStyle: TextStyle(
+            fontSize: 16,
+          ),
+          dayTextStyle: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+      ),
       dataSource: _DataSource(plans),
       initialSelectedDate: DateTime.now(),
       headerDateFormat: 'yyyy年MM月',
