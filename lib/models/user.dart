@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
   String _id = '';
+  String _number = '';
   String _name = '';
   String _email = '';
   String _password = '';
@@ -12,6 +13,7 @@ class UserModel {
   DateTime _createdAt = DateTime.now();
 
   String get id => _id;
+  String get number => _number;
   String get name => _name;
   String get email => _email;
   String get password => _password;
@@ -24,6 +26,7 @@ class UserModel {
   UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     Map<String, dynamic> map = snapshot.data() ?? {};
     _id = map['id'] ?? '';
+    _number = map['number'] ?? '';
     _name = map['name'] ?? '';
     _email = map['email'] ?? '';
     _password = map['password'] ?? '';

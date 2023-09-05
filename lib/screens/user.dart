@@ -57,8 +57,16 @@ class _UserScreenState extends State<UserScreen> {
                 SizedBox(
                   height: 600,
                   child: CustomDataGrid(
-                    source: UserSource(users: users),
+                    source: UserSource(
+                      context: context,
+                      users: users,
+                      getUsers: _getUsers,
+                    ),
                     columns: [
+                      GridColumn(
+                        columnName: 'number',
+                        label: const CustomCell(label: '社員番号'),
+                      ),
                       GridColumn(
                         columnName: 'name',
                         label: const CustomCell(label: 'ユーザー名'),
@@ -66,6 +74,10 @@ class _UserScreenState extends State<UserScreen> {
                       GridColumn(
                         columnName: 'email',
                         label: const CustomCell(label: 'メールアドレス'),
+                      ),
+                      GridColumn(
+                        columnName: 'edit',
+                        label: const CustomCell(label: '操作'),
                       ),
                     ],
                   ),

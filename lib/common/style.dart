@@ -37,6 +37,12 @@ FluentThemeData customTheme() {
         ),
       ),
     ),
+    dividerTheme: const DividerThemeData(
+      thickness: 1,
+      decoration: BoxDecoration(color: kGreyColor),
+      verticalMargin: EdgeInsets.zero,
+      horizontalMargin: EdgeInsets.zero,
+    ),
   );
 }
 

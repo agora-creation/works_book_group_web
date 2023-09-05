@@ -5,6 +5,10 @@ class UserService {
   String collection = 'user';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  void update(Map<String, dynamic> values) {
+    firestore.collection(collection).doc(values['id']).update(values);
+  }
+
   Future<List<UserModel>> selectList(String? groupNumber) async {
     List<UserModel> ret = [];
     await firestore

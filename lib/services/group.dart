@@ -5,6 +5,10 @@ class GroupService {
   String collection = 'group';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  void update(Map<String, dynamic> values) {
+    firestore.collection(collection).doc(values['id']).update(values);
+  }
+
   Future<GroupModel?> select(String? number, String? password) async {
     GroupModel? ret;
     await firestore
