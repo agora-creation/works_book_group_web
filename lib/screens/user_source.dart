@@ -65,6 +65,13 @@ class UserSource extends DataGridSource {
     cells.add(Row(
       children: [
         CustomButton(
+          labelText: '編集',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () {},
+        ),
+        const SizedBox(width: 8),
+        CustomButton(
           labelText: '脱退させる',
           labelColor: kWhiteColor,
           backgroundColor: kRedColor,
