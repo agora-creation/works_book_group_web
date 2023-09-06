@@ -64,25 +64,25 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           PaneItemSeparator(),
           PaneItem(
-            icon: const Icon(FluentIcons.shopping_cart),
+            icon: const Icon(FluentIcons.schedule_event_action),
             title: const Text('スケジュール管理'),
             body: ScheduleScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
-            icon: const Icon(FluentIcons.bank),
+            icon: const Icon(FluentIcons.check_list),
             title: const Text('Todoタスク管理'),
             body: TodoScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
-            icon: const Icon(FluentIcons.bank),
+            icon: const Icon(FluentIcons.timeline_delivery),
             title: const Text('勤怠打刻管理'),
             body: RecordScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
-            icon: const Icon(FluentIcons.bank),
+            icon: const Icon(FluentIcons.group),
             title: const Text('所属ユーザー管理'),
             body: UserScreen(authProvider: authProvider),
           ),

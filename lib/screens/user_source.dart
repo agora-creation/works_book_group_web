@@ -6,6 +6,7 @@ import 'package:works_book_group_web/services/group_login.dart';
 import 'package:works_book_group_web/services/user.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
 import 'package:works_book_group_web/widgets/custom_cell.dart';
+import 'package:works_book_group_web/widgets/custom_text_box.dart';
 
 class UserSource extends DataGridSource {
   final BuildContext context;
@@ -68,7 +69,13 @@ class UserSource extends DataGridSource {
           labelText: '編集',
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
-          onPressed: () {},
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => ModUserDialog(
+              getUsers: getUsers,
+              user: user,
+            ),
+          ),
         ),
         const SizedBox(width: 8),
         CustomButton(
@@ -132,6 +139,88 @@ class UserSource extends DataGridSource {
 
   void updateDataSource() {
     notifyListeners();
+  }
+}
+
+class ModUserDialog extends StatefulWidget {
+  final UserModel user;
+  final Function() getUsers;
+
+  const ModUserDialog({
+    required this.user,
+    required this.getUsers,
+    super.key,
+  });
+
+  @override
+  State<ModUserDialog> createState() => _ModUserDialogState();
+}
+
+class _ModUserDialogState extends State<ModUserDialog> {
+  UserService userService = UserService();
+  TextEditingController numberController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    numberController.text = widget.user.number;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        'ユーザー情報 - 編集',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InfoLabel(
+            label: '社員番号',
+            child: CustomTextBox(
+              controller: numberController,
+              placeholder: '',
+              keyboardType: TextInputType.number,
+              maxLines: 1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: 'ユーザー名',
+            child: Text(widget.user.name),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: 'メールアドレス',
+            child: Text(widget.user.email),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          labelText: '閉じる',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            userService.update({
+              'id': widget.user.id,
+              'number': numberController.text,
+            });
+            widget.getUsers();
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
   }
 }
 

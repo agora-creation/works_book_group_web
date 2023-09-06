@@ -232,8 +232,20 @@ class _CsvDialogState extends State<CsvDialog> {
               List<String> row = [];
               row.add(user.id);
               row.add(user.name);
-              row.add('00:00');
-              row.add('00:00');
+              List<RecordModel> records = await recordService.selectList(
+                groupNumber: widget.group?.number,
+                userId: user.id,
+                searchStart: monthStart,
+                searchEnd: monthEnd,
+              );
+              String recordTimes = '00:00';
+              String restTimes = '00:00';
+              for (RecordModel record in records) {
+                recordTimes = addTime(recordTimes, record.recordTime());
+                restTimes = addTime(restTimes, record.restTimes());
+              }
+              row.add(recordTimes);
+              row.add(restTimes);
               rows.add(row);
             }
             String csv = const ListToCsvConverter().convert(

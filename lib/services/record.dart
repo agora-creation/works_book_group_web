@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/models/record.dart';
 
 class RecordService {
@@ -41,17 +42,28 @@ class RecordService {
     return ret;
   }
 
-  Future<List<RecordModel>> selectList(String? groupNumber) async {
+  Future<List<RecordModel>> selectList({
+    required String? groupNumber,
+    required String userId,
+    required DateTime searchStart,
+    required DateTime searchEnd,
+  }) async {
     List<RecordModel> ret = [];
+    Timestamp startAt = convertTimestamp(searchStart, false);
+    Timestamp endAt = convertTimestamp(searchEnd, true);
     await firestore
         .collection(collection)
         .where('groupNumber', isEqualTo: groupNumber ?? 'error')
+        .where('userId', isEqualTo: userId)
+        .orderBy('startedAt', descending: false)
+        .startAt([startAt])
+        .endAt([endAt])
         .get()
         .then((value) {
-      for (DocumentSnapshot<Map<String, dynamic>> doc in value.docs) {
-        ret.add(RecordModel.fromSnapshot(doc));
-      }
-    });
+          for (DocumentSnapshot<Map<String, dynamic>> doc in value.docs) {
+            ret.add(RecordModel.fromSnapshot(doc));
+          }
+        });
     return ret;
   }
 }
