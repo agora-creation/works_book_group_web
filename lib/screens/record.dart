@@ -88,18 +88,6 @@ class _RecordScreenState extends State<RecordScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  CustomIconTextButton(
-                    iconData: FluentIcons.settings,
-                    iconColor: kWhiteColor,
-                    labelText: '勤怠設定',
-                    labelColor: kWhiteColor,
-                    backgroundColor: kGreyColor,
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => const SettingsDialog(),
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -259,45 +247,6 @@ class _CsvDialogState extends State<CsvDialog> {
               ..setAttribute('download', fileName)
               ..click();
           },
-        ),
-      ],
-    );
-  }
-}
-
-class SettingsDialog extends StatefulWidget {
-  const SettingsDialog({super.key});
-
-  @override
-  State<SettingsDialog> createState() => _SettingsDialogState();
-}
-
-class _SettingsDialogState extends State<SettingsDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return ContentDialog(
-      title: const Text(
-        '勤怠設定',
-        style: TextStyle(fontSize: 18),
-      ),
-      content: const Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('休憩時間の自動設定'),
-          Text('時間のまるめ設定'),
-          Text('法定労働時間'),
-          Text('所定の勤務時間帯'),
-          Text('所定の深夜時間帯'),
-          Text('休日設定'),
-        ],
-      ),
-      actions: [
-        CustomButton(
-          labelText: '閉じる',
-          labelColor: kWhiteColor,
-          backgroundColor: kGreyColor,
-          onPressed: () => Navigator.pop(context),
         ),
       ],
     );

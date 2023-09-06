@@ -82,6 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           PaneItemSeparator(),
           PaneItem(
+            icon: const Icon(FluentIcons.settings),
+            title: const Text('勤怠設定'),
+            body: Container(),
+          ),
+          PaneItemSeparator(),
+          PaneItem(
             icon: const Icon(FluentIcons.group),
             title: const Text('所属ユーザー管理'),
             body: UserScreen(authProvider: authProvider),
