@@ -7,6 +7,7 @@ import 'package:works_book_group_web/providers/auth.dart';
 import 'package:works_book_group_web/screens/group_login.dart';
 import 'package:works_book_group_web/screens/login.dart';
 import 'package:works_book_group_web/screens/record.dart';
+import 'package:works_book_group_web/screens/record_settings.dart';
 import 'package:works_book_group_web/screens/schedule.dart';
 import 'package:works_book_group_web/screens/todo.dart';
 import 'package:works_book_group_web/screens/user.dart';
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
           PaneItem(
             icon: const Icon(FluentIcons.settings),
             title: const Text('勤怠設定'),
-            body: Container(),
+            body: RecordSettingsScreen(authProvider: authProvider),
           ),
           PaneItemSeparator(),
           PaneItem(
