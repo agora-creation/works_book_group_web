@@ -40,6 +40,11 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
                 ],
               ),
               const SizedBox(height: 8),
+              ListView(
+                children: const [
+                  Text('帳票などの出力時、時間'),
+                ],
+              ),
             ],
           ),
         ),
