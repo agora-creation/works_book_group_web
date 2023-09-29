@@ -90,4 +90,93 @@ class AuthProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future reloadGroup() async {
+    String? tmpGroupNumber = await getPrefsString('groupNumber');
+    String? tmpGroupPassword = await getPrefsString('groupPassword');
+    GroupModel? tmpGroup = await groupService.select(
+      tmpGroupNumber,
+      tmpGroupPassword,
+    );
+    if (tmpGroup == null) {
+    } else {
+      _group = tmpGroup;
+    }
+    notifyListeners();
+  }
+
+  Future<String?> updateInfo({
+    required String name,
+    required String zipCode,
+    required String address,
+    required String tel,
+    required String email,
+    required String password,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'name': name,
+        'zipCode': zipCode,
+        'address': address,
+        'tel': tel,
+        'email': email,
+        'password': password,
+      });
+      await setPrefsString('groupPassword', password);
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateLegalHour({
+    required int legalHour,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'legalHour': legalHour,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateRoundStartedAt({
+    required int roundStartedAtType,
+    required int roundStartedAtMinute,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'roundStartedAtType': roundStartedAtType,
+        'roundStartedAtMinute': roundStartedAtMinute,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateRoundEndedAt({
+    required int roundEndedAtType,
+    required int roundEndedAtMinute,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'roundEndedAtType': roundEndedAtType,
+        'roundEndedAtMinute': roundEndedAtMinute,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
 }

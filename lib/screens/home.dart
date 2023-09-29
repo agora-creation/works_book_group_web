@@ -11,7 +11,6 @@ import 'package:works_book_group_web/screens/record_settings.dart';
 import 'package:works_book_group_web/screens/schedule.dart';
 import 'package:works_book_group_web/screens/todo.dart';
 import 'package:works_book_group_web/screens/user.dart';
-import 'package:works_book_group_web/services/group.dart';
 import 'package:works_book_group_web/services/group_login.dart';
 import 'package:works_book_group_web/widgets/app_bar_title.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
@@ -138,7 +137,7 @@ class SignOutDialog extends StatefulWidget {
 }
 
 class _SignOutDialogState extends State<SignOutDialog> {
-  GroupService groupService = GroupService();
+  TextEditingController nameController = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController telController = TextEditingController();
@@ -148,6 +147,7 @@ class _SignOutDialogState extends State<SignOutDialog> {
   @override
   void initState() {
     super.initState();
+    nameController.text = widget.authProvider.group?.name ?? '';
     zipCodeController.text = widget.authProvider.group?.zipCode ?? '';
     addressController.text = widget.authProvider.group?.address ?? '';
     telController.text = widget.authProvider.group?.tel ?? '';
@@ -173,7 +173,12 @@ class _SignOutDialogState extends State<SignOutDialog> {
           const SizedBox(height: 8),
           InfoLabel(
             label: '会社・組織名',
-            child: Text('${widget.authProvider.group?.name}'),
+            child: CustomTextBox(
+              controller: nameController,
+              placeholder: '',
+              keyboardType: TextInputType.name,
+              maxLines: 1,
+            ),
           ),
           const SizedBox(height: 8),
           InfoLabel(
@@ -255,14 +260,16 @@ class _SignOutDialogState extends State<SignOutDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
-            groupService.update({
-              'id': widget.authProvider.group?.id,
-              'zipCode': zipCodeController.text,
-              'address': addressController.text,
-              'tel': telController.text,
-              'email': emailController.text,
-              'password': passwordController.text,
-            });
+            await widget.authProvider.updateInfo(
+              name: nameController.text,
+              zipCode: zipCodeController.text,
+              address: addressController.text,
+              tel: telController.text,
+              email: emailController.text,
+              password: passwordController.text,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),

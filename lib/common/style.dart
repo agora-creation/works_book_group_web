@@ -55,3 +55,8 @@ List<Color> kPlanColors = const [
 
 DateTime kFirstDate = DateTime.now().subtract(const Duration(days: 1095));
 DateTime kLastDate = DateTime.now().add(const Duration(days: 1095));
+
+List<int> kLegalHours = [7, 8];
+List<String> kRoundTypes = ['切捨', '切上'];
+List<int> kRoundMinutes = [1, 5, 10, 15, 30];
+List<String> kWeeks = ['日', '月', '火', '水', '木', '金', '土'];
