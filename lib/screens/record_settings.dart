@@ -5,6 +5,7 @@ import 'package:works_book_group_web/providers/auth.dart';
 import 'package:works_book_group_web/widgets/custom_button.dart';
 import 'package:works_book_group_web/widgets/custom_icon_header.dart';
 import 'package:works_book_group_web/widgets/custom_setting_list.dart';
+import 'package:works_book_group_web/widgets/custom_time_box.dart';
 
 class RecordSettingsScreen extends StatefulWidget {
   final AuthProvider authProvider;
@@ -812,10 +813,23 @@ class _FixedDialogState extends State<FixedDialog> {
         '所定労働時間帯',
         style: TextStyle(fontSize: 18),
       ),
-      content: const Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
+        children: [
+          CustomTimeBox(
+            value: DateTime.now(),
+            onTap: () async {
+              // final result = await CustomDateTimePicker().showTimeChange(
+              //   context: context,
+              //   value: endedAt,
+              // );
+              // setState(() {
+              //   endedAt = result;
+              // });
+            },
+          ),
+        ],
       ),
       actions: [
         CustomButton(
