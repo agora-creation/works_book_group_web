@@ -817,17 +817,20 @@ class _FixedDialogState extends State<FixedDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomTimeBox(
-            value: DateTime.now(),
-            onTap: () async {
-              // final result = await CustomDateTimePicker().showTimeChange(
-              //   context: context,
-              //   value: endedAt,
-              // );
-              // setState(() {
-              //   endedAt = result;
-              // });
-            },
+          InfoLabel(
+            label: '労働開始時間',
+            child: CustomTimeBox(
+              value: DateTime.now(),
+              onTap: () async {
+                // final result = await CustomDateTimePicker().showTimeChange(
+                //   context: context,
+                //   value: endedAt,
+                // );
+                // setState(() {
+                //   endedAt = result;
+                // });
+              },
+            ),
           ),
         ],
       ),
