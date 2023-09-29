@@ -179,4 +179,134 @@ class AuthProvider with ChangeNotifier {
     }
     return error;
   }
+
+  Future<String?> updateRoundRestStartedAt({
+    required int roundRestStartedAtType,
+    required int roundRestStartedAtMinute,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'roundRestStartedAtType': roundRestStartedAtType,
+        'roundRestStartedAtMinute': roundRestStartedAtMinute,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateRoundRestEndedAt({
+    required int roundRestEndedAtType,
+    required int roundRestEndedAtMinute,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'roundRestEndedAtType': roundRestEndedAtType,
+        'roundRestEndedAtMinute': roundRestEndedAtMinute,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateRoundDiff({
+    required int roundDiffType,
+    required int roundDiffMinute,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'roundDiffType': roundDiffType,
+        'roundDiffMinute': roundDiffMinute,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateFixed({
+    required String fixedStartedAt,
+    required String fixedEndedAt,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'fixedStartedAt': fixedStartedAt,
+        'fixedEndedAt': fixedEndedAt,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateNight({
+    required String nightStartedAt,
+    required String nightEndedAt,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'nightStartedAt': nightStartedAt,
+        'nightEndedAt': nightEndedAt,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateHolidayWeeks({
+    required List<String> holidayWeeks,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'holidayWeeks': holidayWeeks,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateHolidays({
+    required List<DateTime> holidays,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'holidays': holidays,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> updateAutoRest({
+    required bool autoRest,
+  }) async {
+    String? error;
+    try {
+      groupService.update({
+        'id': group?.id,
+        'autoRest': autoRest,
+      });
+    } catch (e) {
+      error = e.toString();
+    }
+    return error;
+  }
 }

@@ -72,39 +72,74 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
                   label: '休憩開始時間の丸め',
                   value:
                       '端数処理[${kRoundTypes[group?.roundRestStartedAtType ?? 0]}]／分数[${group?.roundRestStartedAtMinute ?? 1}分]',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => RoundRestStartedAtDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '休憩終了時間の丸め',
                   value:
                       '端数処理[${kRoundTypes[group?.roundRestEndedAtType ?? 0]}]／分数[${group?.roundRestEndedAtMinute ?? 1}分]',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => RoundRestEndedAtDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '勤務時間の丸め',
                   value:
                       '端数処理[${kRoundTypes[group?.roundDiffType ?? 0]}]／分数[${group?.roundDiffMinute ?? 1}分]',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => RoundDiffDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '所定労働時間帯',
                   value: '${group?.fixedStartedAt}～${group?.fixedEndedAt}',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => FixedDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '深夜時間帯',
                   value: '${group?.nightStartedAt}～${group?.nightEndedAt}',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => NightDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '休日指定(曜日)',
-                  value: '土、日',
-                  onTap: () {},
+                  value: '土／日',
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => HolidayWeeksDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 CustomSettingList(
                   label: '休日指定(日付)',
-                  value: '2021-05-18、2021-12-07',
-                  onTap: () {},
+                  value: '2021-05-18／2021-12-07',
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => HolidaysDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 const CustomIconHeader(
@@ -114,7 +149,12 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
                 CustomSettingList(
                   label: '休憩時間の自動打刻(1時間分)',
                   value: group?.autoRest ?? false ? '有効' : '無効',
-                  onTap: () {},
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => AutoRestDialog(
+                      authProvider: widget.authProvider,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -408,6 +448,635 @@ class _RoundEndedAtDialogState extends State<RoundEndedAtDialog> {
             );
             await widget.authProvider.reloadGroup();
             if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class RoundRestStartedAtDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const RoundRestStartedAtDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<RoundRestStartedAtDialog> createState() =>
+      _RoundRestStartedAtDialogState();
+}
+
+class _RoundRestStartedAtDialogState extends State<RoundRestStartedAtDialog> {
+  int roundRestStartedAtType = 0;
+  int roundRestStartedAtMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundRestStartedAtType = group?.roundRestStartedAtType ?? 0;
+      roundRestStartedAtMinute = group?.roundRestStartedAtMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '休憩開始時間の丸め',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InfoLabel(
+            label: '端数処理',
+            child: ComboBox(
+              value: kRoundTypes[roundRestStartedAtType],
+              items: kRoundTypes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text(e),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundRestStartedAtType = kRoundTypes.indexOf('$value');
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: '分数',
+            child: ComboBox(
+              value: roundRestStartedAtMinute,
+              items: kRoundMinutes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text('$e分'),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundRestStartedAtMinute = value ?? 1;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            await widget.authProvider.updateRoundRestStartedAt(
+              roundRestStartedAtType: roundRestStartedAtType,
+              roundRestStartedAtMinute: roundRestStartedAtMinute,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class RoundRestEndedAtDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const RoundRestEndedAtDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<RoundRestEndedAtDialog> createState() => _RoundRestEndedAtDialogState();
+}
+
+class _RoundRestEndedAtDialogState extends State<RoundRestEndedAtDialog> {
+  int roundRestEndedAtType = 0;
+  int roundRestEndedAtMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundRestEndedAtType = group?.roundRestEndedAtType ?? 0;
+      roundRestEndedAtMinute = group?.roundRestEndedAtMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '休憩終了時間の丸め',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InfoLabel(
+            label: '端数処理',
+            child: ComboBox(
+              value: kRoundTypes[roundRestEndedAtType],
+              items: kRoundTypes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text(e),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundRestEndedAtType = kRoundTypes.indexOf('$value');
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: '分数',
+            child: ComboBox(
+              value: roundRestEndedAtMinute,
+              items: kRoundMinutes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text('$e分'),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundRestEndedAtMinute = value ?? 1;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            await widget.authProvider.updateRoundRestEndedAt(
+              roundRestEndedAtType: roundRestEndedAtType,
+              roundRestEndedAtMinute: roundRestEndedAtMinute,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class RoundDiffDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const RoundDiffDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<RoundDiffDialog> createState() => _RoundDiffDialogState();
+}
+
+class _RoundDiffDialogState extends State<RoundDiffDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '勤務時間の丸め',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InfoLabel(
+            label: '端数処理',
+            child: ComboBox(
+              value: kRoundTypes[roundDiffType],
+              items: kRoundTypes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text(e),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundDiffType = kRoundTypes.indexOf('$value');
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: '分数',
+            child: ComboBox(
+              value: roundDiffMinute,
+              items: kRoundMinutes.map((e) {
+                return ComboBoxItem(
+                  value: e,
+                  child: Text('$e分'),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  roundDiffMinute = value ?? 1;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            await widget.authProvider.updateRoundDiff(
+              roundDiffType: roundDiffType,
+              roundDiffMinute: roundDiffMinute,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class FixedDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const FixedDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<FixedDialog> createState() => _FixedDialogState();
+}
+
+class _FixedDialogState extends State<FixedDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '所定労働時間帯',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class NightDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const NightDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<NightDialog> createState() => _NightDialogState();
+}
+
+class _NightDialogState extends State<NightDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '深夜時間帯',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class HolidayWeeksDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const HolidayWeeksDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<HolidayWeeksDialog> createState() => _HolidayWeeksDialogState();
+}
+
+class _HolidayWeeksDialogState extends State<HolidayWeeksDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '休日指定(曜日)',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class HolidaysDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const HolidaysDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<HolidaysDialog> createState() => _HolidaysDialogState();
+}
+
+class _HolidaysDialogState extends State<HolidaysDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '休日指定(日付)',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class AutoRestDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const AutoRestDialog({
+    required this.authProvider,
+    super.key,
+  });
+
+  @override
+  State<AutoRestDialog> createState() => _AutoRestDialogState();
+}
+
+class _AutoRestDialogState extends State<AutoRestDialog> {
+  int roundDiffType = 0;
+  int roundDiffMinute = 1;
+
+  void _init() {
+    GroupModel? group = widget.authProvider.group;
+    setState(() {
+      roundDiffType = group?.roundDiffType ?? 0;
+      roundDiffMinute = group?.roundDiffMinute ?? 1;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text(
+        '休憩時間の自動打刻(1時間)',
+        style: TextStyle(fontSize: 18),
+      ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+      actions: [
+        CustomButton(
+          labelText: 'キャンセル',
+          labelColor: kWhiteColor,
+          backgroundColor: kGreyColor,
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          labelText: '保存する',
+          labelColor: kWhiteColor,
+          backgroundColor: kBlueColor,
+          onPressed: () async {
             Navigator.pop(context);
           },
         ),
