@@ -1,4 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:works_book_group_web/common/custom_date_time_picker.dart';
+import 'package:works_book_group_web/common/functions.dart';
 import 'package:works_book_group_web/common/style.dart';
 import 'package:works_book_group_web/models/group.dart';
 import 'package:works_book_group_web/providers/auth.dart';
@@ -23,7 +26,16 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     GroupModel? group = widget.authProvider.group;
-
+    String holidayWeeksText = '';
+    for (String week in group?.holidayWeeks ?? []) {
+      if (holidayWeeksText != '') holidayWeeksText += '／';
+      holidayWeeksText += week;
+    }
+    String holidaysText = '';
+    for (DateTime day in group?.holidays ?? []) {
+      if (holidaysText != '') holidaysText += '／';
+      holidaysText += dateText('yyyy-MM-dd', day);
+    }
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -124,7 +136,7 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
                 ),
                 CustomSettingList(
                   label: '休日指定(曜日)',
-                  value: '土／日',
+                  value: holidayWeeksText,
                   onTap: () => showDialog(
                     context: context,
                     builder: (context) => HolidayWeeksDialog(
@@ -134,7 +146,7 @@ class _RecordSettingsScreenState extends State<RecordSettingsScreen> {
                 ),
                 CustomSettingList(
                   label: '休日指定(日付)',
-                  value: '2021-05-18／2021-12-07',
+                  value: holidaysText,
                   onTap: () => showDialog(
                     context: context,
                     builder: (context) => HolidaysDialog(
@@ -789,14 +801,15 @@ class FixedDialog extends StatefulWidget {
 }
 
 class _FixedDialogState extends State<FixedDialog> {
-  int roundDiffType = 0;
-  int roundDiffMinute = 1;
+  DateTime now = DateTime.now();
+  String fixedStartedAt = '09:00';
+  String fixedEndedAt = '17:00';
 
   void _init() {
     GroupModel? group = widget.authProvider.group;
     setState(() {
-      roundDiffType = group?.roundDiffType ?? 0;
-      roundDiffMinute = group?.roundDiffMinute ?? 1;
+      fixedStartedAt = group?.fixedStartedAt ?? '09:00';
+      fixedEndedAt = group?.fixedEndedAt ?? '17:00';
     });
   }
 
@@ -808,6 +821,12 @@ class _FixedDialogState extends State<FixedDialog> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime startValue = DateTime.parse(
+      '${dateText('yyyy-MM-dd', now)} $fixedStartedAt:00.0000',
+    );
+    DateTime endValue = DateTime.parse(
+      '${dateText('yyyy-MM-dd', now)} $fixedEndedAt:00.0000',
+    );
     return ContentDialog(
       title: const Text(
         '所定労働時間帯',
@@ -820,15 +839,31 @@ class _FixedDialogState extends State<FixedDialog> {
           InfoLabel(
             label: '労働開始時間',
             child: CustomTimeBox(
-              value: DateTime.now(),
+              value: startValue,
               onTap: () async {
-                // final result = await CustomDateTimePicker().showTimeChange(
-                //   context: context,
-                //   value: endedAt,
-                // );
-                // setState(() {
-                //   endedAt = result;
-                // });
+                final result = await CustomDateTimePicker().showTimeChange(
+                  context: context,
+                  value: startValue,
+                );
+                setState(() {
+                  fixedStartedAt = dateText('HH:mm', result);
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: '労働終了時間',
+            child: CustomTimeBox(
+              value: endValue,
+              onTap: () async {
+                final result = await CustomDateTimePicker().showTimeChange(
+                  context: context,
+                  value: endValue,
+                );
+                setState(() {
+                  fixedEndedAt = dateText('HH:mm', result);
+                });
               },
             ),
           ),
@@ -846,6 +881,12 @@ class _FixedDialogState extends State<FixedDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            await widget.authProvider.updateFixed(
+              fixedStartedAt: fixedStartedAt,
+              fixedEndedAt: fixedEndedAt,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
@@ -867,14 +908,15 @@ class NightDialog extends StatefulWidget {
 }
 
 class _NightDialogState extends State<NightDialog> {
-  int roundDiffType = 0;
-  int roundDiffMinute = 1;
+  DateTime now = DateTime.now();
+  String nightStartedAt = '22:00';
+  String nightEndedAt = '05:00';
 
   void _init() {
     GroupModel? group = widget.authProvider.group;
     setState(() {
-      roundDiffType = group?.roundDiffType ?? 0;
-      roundDiffMinute = group?.roundDiffMinute ?? 1;
+      nightStartedAt = group?.nightStartedAt ?? '22:00';
+      nightEndedAt = group?.nightEndedAt ?? '05:00';
     });
   }
 
@@ -886,15 +928,53 @@ class _NightDialogState extends State<NightDialog> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime startValue = DateTime.parse(
+      '${dateText('yyyy-MM-dd', now)} $nightStartedAt:00.0000',
+    );
+    DateTime endValue = DateTime.parse(
+      '${dateText('yyyy-MM-dd', now)} $nightEndedAt:00.0000',
+    );
     return ContentDialog(
       title: const Text(
         '深夜時間帯',
         style: TextStyle(fontSize: 18),
       ),
-      content: const Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
+        children: [
+          InfoLabel(
+            label: '深夜開始時間',
+            child: CustomTimeBox(
+              value: startValue,
+              onTap: () async {
+                final result = await CustomDateTimePicker().showTimeChange(
+                  context: context,
+                  value: startValue,
+                );
+                setState(() {
+                  nightStartedAt = dateText('HH:mm', result);
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          InfoLabel(
+            label: '深夜終了時間',
+            child: CustomTimeBox(
+              value: endValue,
+              onTap: () async {
+                final result = await CustomDateTimePicker().showTimeChange(
+                  context: context,
+                  value: endValue,
+                );
+                setState(() {
+                  nightEndedAt = dateText('HH:mm', result);
+                });
+              },
+            ),
+          ),
+        ],
       ),
       actions: [
         CustomButton(
@@ -908,6 +988,12 @@ class _NightDialogState extends State<NightDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            await widget.authProvider.updateNight(
+              nightStartedAt: nightStartedAt,
+              nightEndedAt: nightEndedAt,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
@@ -929,14 +1015,12 @@ class HolidayWeeksDialog extends StatefulWidget {
 }
 
 class _HolidayWeeksDialogState extends State<HolidayWeeksDialog> {
-  int roundDiffType = 0;
-  int roundDiffMinute = 1;
+  List<String> holidayWeeks = [];
 
   void _init() {
     GroupModel? group = widget.authProvider.group;
     setState(() {
-      roundDiffType = group?.roundDiffType ?? 0;
-      roundDiffMinute = group?.roundDiffMinute ?? 1;
+      holidayWeeks = group?.holidayWeeks ?? [];
     });
   }
 
@@ -953,10 +1037,39 @@ class _HolidayWeeksDialogState extends State<HolidayWeeksDialog> {
         '休日指定(曜日)',
         style: TextStyle(fontSize: 18),
       ),
-      content: const Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: kWeeks.length,
+            itemBuilder: (context, index) {
+              var contain = holidayWeeks.where((e) => e == kWeeks[index]);
+              return Container(
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: kGreyColor)),
+                ),
+                child: Checkbox(
+                  checked: contain.isNotEmpty,
+                  onChanged: (value) {
+                    setState(() {
+                      if (contain.isEmpty) {
+                        holidayWeeks.add(kWeeks[index]);
+                      } else {
+                        holidayWeeks.remove(kWeeks[index]);
+                      }
+                    });
+                  },
+                  content: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(kWeeks[index]),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       actions: [
         CustomButton(
@@ -970,6 +1083,11 @@ class _HolidayWeeksDialogState extends State<HolidayWeeksDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            await widget.authProvider.updateHolidayWeeks(
+              holidayWeeks: holidayWeeks,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
@@ -991,14 +1109,12 @@ class HolidaysDialog extends StatefulWidget {
 }
 
 class _HolidaysDialogState extends State<HolidaysDialog> {
-  int roundDiffType = 0;
-  int roundDiffMinute = 1;
+  List<DateTime> holidays = [];
 
   void _init() {
     GroupModel? group = widget.authProvider.group;
     setState(() {
-      roundDiffType = group?.roundDiffType ?? 0;
-      roundDiffMinute = group?.roundDiffMinute ?? 1;
+      holidays = group?.holidays ?? [];
     });
   }
 
@@ -1015,10 +1131,25 @@ class _HolidaysDialogState extends State<HolidaysDialog> {
         '休日指定(日付)',
         style: TextStyle(fontSize: 18),
       ),
-      content: const Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
+        children: [
+          SfDateRangePicker(
+            view: DateRangePickerView.month,
+            selectionMode: DateRangePickerSelectionMode.multiple,
+            initialSelectedDates: holidays,
+            onSelectionChanged: (value) {
+              List<DateTime> selected = [];
+              for (DateTime day in value.value) {
+                selected.add(day);
+              }
+              setState(() {
+                holidays = selected;
+              });
+            },
+          ),
+        ],
       ),
       actions: [
         CustomButton(
@@ -1032,6 +1163,11 @@ class _HolidaysDialogState extends State<HolidaysDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            await widget.authProvider.updateHolidays(
+              holidays: holidays,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
@@ -1053,14 +1189,12 @@ class AutoRestDialog extends StatefulWidget {
 }
 
 class _AutoRestDialogState extends State<AutoRestDialog> {
-  int roundDiffType = 0;
-  int roundDiffMinute = 1;
+  bool autoRest = false;
 
   void _init() {
     GroupModel? group = widget.authProvider.group;
     setState(() {
-      roundDiffType = group?.roundDiffType ?? 0;
-      roundDiffMinute = group?.roundDiffMinute ?? 1;
+      autoRest = group?.autoRest ?? false;
     });
   }
 
@@ -1077,10 +1211,30 @@ class _AutoRestDialogState extends State<AutoRestDialog> {
         '休憩時間の自動打刻(1時間)',
         style: TextStyle(fontSize: 18),
       ),
-      content: const Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [],
+        children: [
+          ComboBox(
+            value: autoRest,
+            items: const [
+              ComboBoxItem(
+                value: false,
+                child: Text('無効'),
+              ),
+              ComboBoxItem(
+                value: true,
+                child: Text('有効'),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                autoRest = value ?? false;
+              });
+            },
+            isExpanded: true,
+          ),
+        ],
       ),
       actions: [
         CustomButton(
@@ -1094,6 +1248,11 @@ class _AutoRestDialogState extends State<AutoRestDialog> {
           labelColor: kWhiteColor,
           backgroundColor: kBlueColor,
           onPressed: () async {
+            await widget.authProvider.updateAutoRest(
+              autoRest: autoRest,
+            );
+            await widget.authProvider.reloadGroup();
+            if (!mounted) return;
             Navigator.pop(context);
           },
         ),
