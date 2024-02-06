@@ -5,16 +5,13 @@ class GroupService {
   String collection = 'group';
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  void update(Map<String, dynamic> values) {
-    firestore.collection(collection).doc(values['id']).update(values);
-  }
-
-  Future<GroupModel?> select(String? number, String? password) async {
+  Future<GroupModel?> select({
+    String? groupCode,
+  }) async {
     GroupModel? ret;
     await firestore
         .collection(collection)
-        .where('number', isEqualTo: number ?? 'error')
-        .where('password', isEqualTo: password ?? 'error')
+        .where('code', isEqualTo: groupCode ?? 'error')
         .get()
         .then((value) {
       if (value.docs.isNotEmpty) {
@@ -22,5 +19,14 @@ class GroupService {
       }
     });
     return ret;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamId({
+    String? groupId,
+  }) {
+    return firestore
+        .collection(collection)
+        .where('id', isEqualTo: groupId ?? 'error')
+        .snapshots();
   }
 }
